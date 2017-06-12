@@ -92,11 +92,19 @@
 /***/ (function(module, exports) {
 
 	module.exports = {
-	  "navigation": {
+	  "navigationBar": {
+	    "position": "absolute",
 	    "width": 750,
-	    "backgroundColor": "#FFFF00"
+	    "height": 90
+	  },
+	  "navigationBackGround": {
+	    "position": "absolute",
+	    "width": 750,
+	    "height": 90,
+	    "backgroundColor": "#FFFFFF"
 	  },
 	  "navigationBackItem": {
+	    "position": "absolute",
 	    "height": 60,
 	    "width": 60,
 	    "backgroundColor": "#0000FF"
@@ -106,7 +114,11 @@
 	    "backgroundColor": "#4b2093"
 	  },
 	  "productinfolist": {
-	    "width": 750
+	    "position": "absolute",
+	    "width": 750,
+	    "left": 0,
+	    "right": 0,
+	    "bottom": 0
 	  },
 	  "coupontitle": {
 	    "position": "absolute",
@@ -567,6 +579,21 @@
 	//
 	//
 	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
 
 
 	var modal = jud.requireModule('modal');
@@ -588,7 +615,9 @@
 	    },
 
 	    data: {
-	        navigationHeight: 90,
+	        listTop: 0,
+	        navigationHeight: 0,
+	        navigationOpacity: 0,
 	        firstcoupon: 0,
 	        heightofintroduce: 60,
 	        showhelpimage: 0,
@@ -653,7 +682,7 @@
 	        clicktab1: function clicktab1() {
 
 	            var el = this.$refs.introducecell;
-	            wdom.scrollToElement(el, { offset: -80 });
+	            wdom.scrollToElement(el, { offset: 0 });
 
 	            modal.toast({
 	                message: 'clicktab1',
@@ -750,14 +779,26 @@
 	            });
 	        },
 	        onScroll: function onScroll(event) {
-	            console.log("event.contentOffset.y : " + event.contentOffset.y);
-	            this.navigationHeight = 600 + event.contentOffset.y;
-	            if (this.navigationHeight < 0) {
-	                this.navigationHeight = 0;
+	            var alpha = -event.contentOffset.y / 415;
+	            if (alpha < 0) {
+	                alpha = 0;
 	            }
 
-	            if (this.navigationHeight > 90) {
-	                this.navigationHeight = 90;
+	            if (alpha > 1) {
+	                alpha = 1;
+	            }
+
+	            this.navigationOpacity = alpha * alpha;
+
+	            var el = this.$refs.introducecell;
+
+	            var offsetHeight = -event.contentOffset.y - 511 + 90; // 得到具体的位置，511是悬浮的header距离顶部的位置，暂时不知道怎么动态获取。。。这个是具体的偏移量
+	            if (offsetHeight >= 0) {
+	                this.listTop = 90;
+	                this.listBottom = -90;
+	            } else {
+	                this.listTop = 0;
+	                this.listBottom = 0;
 	            }
 	        }
 	    },
@@ -2228,19 +2269,11 @@
 	module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
 	  return _c('div', {
 	    staticClass: ["wrapper"]
-	  }, [_c('div', {
-	    ref: "navigation",
-	    staticClass: ["navigation"],
-	    style: {
-	      height: _vm.navigationHeight
-	    }
-	  }, [_c('div', {
-	    staticClass: ["navigationBackItem"],
-	    on: {
-	      "click": _vm.clickBack
-	    }
-	  })]), _c('list', {
+	  }, [_c('list', {
 	    staticClass: ["productinfolist"],
+	    style: {
+	      top: _vm.listTop
+	    },
 	    attrs: {
 	      "offsetAccuracy": "5"
 	    },
@@ -2417,7 +2450,20 @@
 	    }
 	  }, [_c('zs-tailer', {
 	    staticClass: ["ptailer"]
-	  })], 1)], 1)])
+	  })], 1)], 1), _c('div', {
+	    ref: "navigation",
+	    staticClass: ["navigationBar"]
+	  }, [_c('div', {
+	    staticClass: ["navigationBackGround"],
+	    style: {
+	      opacity: _vm.navigationOpacity
+	    }
+	  }), _c('div', {
+	    staticClass: ["navigationBackItem"],
+	    on: {
+	      "click": _vm.clickBack
+	    }
+	  })])])
 	},staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
 	  return _c('div', {
 	    staticClass: ["bintroduce"]
